@@ -16,13 +16,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  RoomType? _selectedRoomType;
-  String _searchQuery = '';
 
-  final List<Widget> _screens = [
-    const RoomListView(),
-    const MyBookingsScreen(),
-    const ProfileScreen(),
+  final List<Widget> _screens = const [
+    RoomListView(),
+    MyBookingsScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -30,6 +28,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: _selectedIndex == 0
           ? AppBar(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              surfaceTintColor: Colors.white,
+              elevation: 0,
+              scrolledUnderElevation: 0,
               title: const Text('Danh Sách Phòng'),
               actions: [
                 IconButton(
@@ -49,9 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() => _selectedIndex = index);
-        },
+        onTap: (index) => setState(() => _selectedIndex = index),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Đặt phòng'),
@@ -84,10 +85,20 @@ class _RoomListViewState extends State<RoomListView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Search and Filter
+        // Search and Filter - Remove background color
         Container(
           padding: const EdgeInsets.all(16),
-          color: Colors.grey[100],
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: Column(
             children: [
               TextField(
@@ -96,7 +107,7 @@ class _RoomListViewState extends State<RoomListView> {
                   hintText: 'Tìm kiếm phòng...',
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Colors.grey[50],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,

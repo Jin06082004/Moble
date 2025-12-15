@@ -32,6 +32,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        surfaceTintColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         title: const Text('Đặt phòng của tôi'),
         bottom: TabBar(
           controller: _tabController,
@@ -75,7 +80,6 @@ class BookingsList extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('bookings')
           .where('userId', isEqualTo: userId)
-          .where('status', whereIn: status.map((s) => s.name).toList())
           .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
@@ -89,6 +93,7 @@ class BookingsList extends StatelessWidget {
 
         final bookings = snapshot.data!.docs
             .map((doc) => BookingModel.fromFirestore(doc))
+            .where((booking) => status.contains(booking.status))
             .toList();
 
         if (bookings.isEmpty) {

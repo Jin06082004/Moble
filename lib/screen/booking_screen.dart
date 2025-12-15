@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../database/Models/room_model.dart';
 import '../database/Models/booking_model.dart';
+import '../database/Models/user_model.dart';
+import '../services/email_service.dart';
 import 'payment_screen.dart';
 
 class BookingScreen extends StatefulWidget {
@@ -117,6 +119,29 @@ class _BookingScreenState extends State<BookingScreen> {
       );
 
       await bookingRef.set(booking.toFirestore());
+
+      // Lấy thông tin user để gửi email
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        final user = UserModel.fromFirestore(userDoc);
+        // Gửi email xác nhận đặt phòng (không chờ để không làm chậm UI)
+        EmailService.sendBookingConfirmationEmail(
+          recipientEmail: user.email,
+          fullName: user.fullName,
+          roomName: widget.room.name,
+          checkInDate:
+              '${_checkInDate!.day}/${_checkInDate!.month}/${_checkInDate!.year}',
+          checkOutDate:
+              '${_checkOutDate!.day}/${_checkOutDate!.month}/${_checkOutDate!.year}',
+          totalPrice: _totalPrice.toStringAsFixed(0),
+        ).catchError((e) {
+          print('Lỗi gửi email: $e');
+        });
+      }
 
       if (mounted) {
         Navigator.of(context).pushReplacement(

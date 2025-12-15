@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../database/Models/booking_model.dart' hide PaymentStatus;
 import '../database/Models/room_model.dart';
 import '../database/Models/payment_model.dart';
+import '../database/Models/user_model.dart';
+import '../services/email_service.dart';
 import 'home_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -53,6 +55,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
             'paymentStatus': PaymentStatus.completed.name,
             'updatedAt': Timestamp.now(),
           });
+
+      // Lấy thông tin user để gửi email
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        final user = UserModel.fromFirestore(userDoc);
+        // Gửi email xác nhận thanh toán (không chờ để không làm chậm UI)
+        EmailService.sendPaymentConfirmationEmail(
+          recipientEmail: user.email,
+          fullName: user.fullName,
+          roomName: widget.room.name,
+          totalPrice: widget.booking.totalPrice.toStringAsFixed(0),
+          transactionId: payment.transactionId ?? 'N/A',
+        ).catchError((e) {
+          print('Lỗi gửi email: $e');
+        });
+      }
 
       if (mounted) {
         // Show success dialog

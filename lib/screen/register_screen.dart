@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../database/Models/user_model.dart';
+import '../services/email_service.dart';
 import 'home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -59,6 +60,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .collection('users')
           .doc(user.id)
           .set(user.toFirestore());
+
+      // Gửi email chào mừng (không chờ để không làm chậm UI)
+      EmailService.sendRegistrationEmail(
+        recipientEmail: user.email,
+        fullName: user.fullName,
+      ).catchError((e) {
+        print('Lỗi gửi email: $e');
+      });
 
       if (mounted) {
         Navigator.of(context).pushReplacement(

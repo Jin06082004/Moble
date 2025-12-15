@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../database/Models/user_model.dart';
-import '../screens/admin_screen.dart';
+import 'admin/admin_home_screen.dart';
 import 'login_screen.dart';
+import 'edit_profile_screen.dart';
+import 'change_password_screen.dart';
+import 'notifications_settings_screen.dart';
+import 'help_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -166,33 +170,89 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.edit,
                         title: 'Chỉnh sửa thông tin',
                         onTap: () {
-                          // TODO: Navigate to edit profile screen
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Chức năng đang phát triển'),
-                            ),
-                          );
-                        },
-                      ),
-                      _SettingsTile(
-                        icon: Icons.admin_panel_settings,
-                        title: 'Quản trị dữ liệu',
-                        onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => const AdminScreen(),
+                              builder: (_) => EditProfileScreen(user: user),
                             ),
                           );
                         },
                       ),
+                      // Show Admin Dashboard for admin/manager
+                      if (user.role == UserRole.admin ||
+                          user.role == UserRole.manager)
+                        _SettingsTile(
+                          icon: Icons.admin_panel_settings,
+                          title: 'Quản trị hệ thống',
+                          onTap: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (_) => const AdminHomeScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      // Dev tool: Upgrade to admin (remove in production)
+                      if (user.role == UserRole.customer)
+                        _SettingsTile(
+                          icon: Icons.build,
+                          title: '[DEV] Chuyển thành Admin',
+                          textColor: Colors.orange,
+                          onTap: () async {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Chuyển thành Admin'),
+                                content: const Text(
+                                  'Chức năng này chỉ dùng cho dev. Bạn có muốn chuyển tài khoản này thành Admin?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
+                                    child: const Text('Hủy'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, true),
+                                    child: const Text('Xác nhận'),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true) {
+                              try {
+                                await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(userId)
+                                    .update({'role': 'admin'});
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Đã chuyển thành Admin. Vui lòng đăng xuất và đăng nhập lại.',
+                                      ),
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Lỗi: $e')),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                        ),
                       _SettingsTile(
                         icon: Icons.lock,
                         title: 'Đổi mật khẩu',
                         onTap: () {
-                          // TODO: Navigate to change password screen
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Chức năng đang phát triển'),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ChangePasswordScreen(),
                             ),
                           );
                         },
@@ -201,10 +261,10 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.notifications,
                         title: 'Thông báo',
                         onTap: () {
-                          // TODO: Navigate to notifications settings
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Chức năng đang phát triển'),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const NotificationsSettingsScreen(),
                             ),
                           );
                         },
@@ -213,10 +273,9 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.help,
                         title: 'Trợ giúp',
                         onTap: () {
-                          // TODO: Navigate to help screen
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Chức năng đang phát triển'),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const HelpScreen(),
                             ),
                           );
                         },
@@ -349,11 +408,13 @@ class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback onTap;
+  final Color? textColor;
 
   const _SettingsTile({
     required this.icon,
     required this.title,
     required this.onTap,
+    this.textColor,
   });
 
   @override
@@ -365,8 +426,8 @@ class _SettingsTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        leading: Icon(icon, color: Colors.blue),
-        title: Text(title),
+        leading: Icon(icon, color: textColor ?? Colors.blue),
+        title: Text(title, style: TextStyle(color: textColor)),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

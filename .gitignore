@@ -45,3 +45,6 @@ app.*.map.json
 /android/app/release
 
 firebase_options.dart
+
+# Environment variables - DO NOT COMMIT
+.env
