@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Khách sạn Hà Nội",
+    "description": "Khách sạn cao cấp tại trung tâm Hà Nội.",
+    "location": "Hà Nội",
+    "rating": 4.5,
+    "priceRange": "1.500.000 VNĐ/đêm",
+    "amenities": ["WiFi", "Bể bơi", "Spa"],
+    "imageUrl": "https://example.com/hanoi_hotel.jpg",
+    "latitude": 21.028511,
+    "longitude": 105.804817
+  },
+  {
+    "name": "Khách sạn Đà Nẵng",
+    "description": "Khách sạn gần biển với view đẹp.",
+    "location": "Đà Nẵng",
+    "rating": 4.7,
+    "priceRange": "2.000.000 VNĐ/đêm",
+    "amenities": ["WiFi", "Bể bơi", "Gym"],
+    "imageUrl": "https://example.com/danang_hotel.jpg",
+    "latitude": 16.054407,
+    "longitude": 108.202167
+  },
+  {
+    "name": "Khách sạn Hồ Chí Minh",
+    "description": "Khách sạn sang trọng tại trung tâm Sài Gòn.",
+    "location": "Hồ Chí Minh",
+    "rating": 4.8,
+    "priceRange": "3.000.000 VNĐ/đêm",
+    "amenities": ["WiFi", "Spa", "Nhà hàng"],
+    "imageUrl": "https://example.com/hochiminh_hotel.jpg",
+    "latitude": 10.823099,
+    "longitude": 106.629664
+  }
+]

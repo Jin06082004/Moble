@@ -209,7 +209,7 @@ class _BookingScreenState extends State<BookingScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${widget.room.pricePerNight.toStringAsFixed(0)} VNĐ/đêm',
+                                '${widget.room.formattedPrice}/đêm',
                                 style: const TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.bold,
@@ -343,10 +343,10 @@ class _BookingScreenState extends State<BookingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${widget.room.pricePerNight.toStringAsFixed(0)} VNĐ x $_numberOfNights đêm',
+                          '${widget.room.formattedPrice} x $_numberOfNights đêm',
                         ),
                         Text(
-                          '${_totalPrice.toStringAsFixed(0)} VNĐ',
+                          RoomModel.formatPrice(_totalPrice),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -363,7 +363,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           ),
                         ),
                         Text(
-                          '${_totalPrice.toStringAsFixed(0)} VNĐ',
+                          RoomModel.formatPrice(_totalPrice),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

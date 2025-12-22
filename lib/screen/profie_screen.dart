@@ -192,7 +192,8 @@ class ProfileScreen extends StatelessWidget {
                           },
                         ),
                       // Dev tool: Upgrade to admin (remove in production)
-                      if (user.role == UserRole.customer)
+                      if (user.email == 'admin@gmail.com' ||
+                          user.email == 'dev@gmail.com')
                         _SettingsTile(
                           icon: Icons.build,
                           title: '[DEV] Chuyển thành Admin',

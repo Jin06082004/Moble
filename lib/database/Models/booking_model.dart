@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class BookingModel {
   final String id;
   final String userId;
-  final String roomId;
+  final String? roomId; // Nullable cho hotel bookings
   final DateTime checkInDate;
   final DateTime checkOutDate;
   final int numberOfGuests;
@@ -16,10 +17,17 @@ class BookingModel {
   final DateTime? cancelledAt;
   final String? cancellationReason;
 
+  // Hotel booking fields
+  final String? hotelName;
+  final String? hotelLocation;
+  final double? hotelRating;
+  final int? numberOfNights;
+  final String? paymentMethod;
+
   BookingModel({
     required this.id,
     required this.userId,
-    required this.roomId,
+    this.roomId,
     required this.checkInDate,
     required this.checkOutDate,
     required this.numberOfGuests,
@@ -31,6 +39,11 @@ class BookingModel {
     this.updatedAt,
     this.cancelledAt,
     this.cancellationReason,
+    this.hotelName,
+    this.hotelLocation,
+    this.hotelRating,
+    this.numberOfNights,
+    this.paymentMethod,
   });
 
   factory BookingModel.fromFirestore(DocumentSnapshot doc) {
@@ -38,11 +51,15 @@ class BookingModel {
     return BookingModel(
       id: doc.id,
       userId: data['userId'] ?? '',
-      roomId: data['roomId'] ?? '',
+      roomId: data['roomId'],
       checkInDate: (data['checkInDate'] as Timestamp).toDate(),
       checkOutDate: (data['checkOutDate'] as Timestamp).toDate(),
       numberOfGuests: data['numberOfGuests'] ?? 1,
-      totalPrice: (data['totalPrice'] ?? 0).toDouble(),
+      totalPrice: data['totalPrice'] != null
+          ? (data['totalPrice'] as num).toDouble()
+          : (data['estimatedPrice'] != null
+                ? (data['estimatedPrice'] as num).toDouble()
+                : 0.0),
       status: BookingStatus.values.firstWhere(
         (e) => e.toString() == 'BookingStatus.${data['status']}',
         orElse: () => BookingStatus.pending,
@@ -51,8 +68,10 @@ class BookingModel {
         (e) => e.toString() == 'PaymentStatus.${data['paymentStatus']}',
         orElse: () => PaymentStatus.pending,
       ),
-      specialRequests: data['specialRequests'],
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      specialRequests: data['specialRequests'] ?? data['notes'],
+      createdAt: data['createdAt'] != null
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
       updatedAt: data['updatedAt'] != null
           ? (data['updatedAt'] as Timestamp).toDate()
           : null,
@@ -60,6 +79,13 @@ class BookingModel {
           ? (data['cancelledAt'] as Timestamp).toDate()
           : null,
       cancellationReason: data['cancellationReason'],
+      hotelName: data['hotelName'],
+      hotelLocation: data['hotelLocation'],
+      hotelRating: data['hotelRating'] != null
+          ? (data['hotelRating'] as num).toDouble()
+          : null,
+      numberOfNights: data['numberOfNights'],
+      paymentMethod: data['paymentMethod'],
     );
   }
 
@@ -83,8 +109,21 @@ class BookingModel {
     };
   }
 
-  int get numberOfNights {
-    return checkOutDate.difference(checkInDate).inDays;
+  // Getter để tính số đêm nếu field numberOfNights null
+  int get nights {
+    return numberOfNights ?? checkOutDate.difference(checkInDate).inDays;
+  }
+
+  // Getter để format tổng giá
+  String get formattedTotalPrice {
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return '${formatter.format(totalPrice)} VNĐ';
+  }
+
+  // Method static để format bất kỳ số tiền nào
+  static String formatPrice(double price) {
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return '${formatter.format(price)} VNĐ';
   }
 
   BookingModel copyWith({

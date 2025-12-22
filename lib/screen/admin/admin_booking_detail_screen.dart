@@ -428,7 +428,7 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
                             children: [
                               const Text('Tổng tiền:'),
                               Text(
-                                '${_currentBooking.totalPrice.toStringAsFixed(0)} VNĐ',
+                                _currentBooking.formattedTotalPrice,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,

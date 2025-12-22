@@ -41,6 +41,11 @@ dependencies:
   mailer: ^6.0.1 # Thêm package gửi email
   url_launcher: ^6.3.1 # Thêm package mở URL (cho trợ giúp)
   flutter_dotenv: ^5.1.0 # Quản lý environment variables
+  http: ^1.1.0
+  google_generative_ai: ^0.4.0  # Gemini AI
+  cached_network_image: ^3.3.0 # Cache hình ảnh
+  intl: ^0.18.0  # Thêm dòng này
+  map_launcher: ^4.4.2
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +71,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - .env
+    - data/hotels_vietnam.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

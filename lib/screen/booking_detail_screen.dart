@@ -131,7 +131,7 @@ class BookingDetailScreen extends StatelessWidget {
                   _InfoCard(
                     icon: Icons.nightlight,
                     label: 'Số đêm',
-                    value: '${booking.numberOfNights}',
+                    value: '${booking.nights}',
                   ),
                   if (booking.specialRequests != null) ...[
                     const SizedBox(height: 12),
@@ -161,10 +161,10 @@ class BookingDetailScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${room.pricePerNight.toStringAsFixed(0)} VNĐ x ${booking.numberOfNights} đêm',
+                              '${room.formattedPrice} x ${booking.nights} đêm',
                             ),
                             Text(
-                              '${booking.totalPrice.toStringAsFixed(0)} VNĐ',
+                              booking.formattedTotalPrice,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -183,7 +183,7 @@ class BookingDetailScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${booking.totalPrice.toStringAsFixed(0)} VNĐ',
+                              booking.formattedTotalPrice,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -223,25 +223,64 @@ class BookingDetailScreen extends StatelessWidget {
                       ),
                     ),
                   if (booking.status == BookingStatus.checkedOut) ...[
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  ReviewScreen(booking: booking, room: room),
+                    FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('reviews')
+                          .where('bookingId', isEqualTo: booking.id)
+                          .where('userId', isEqualTo: booking.userId)
+                          .limit(1)
+                          .get(),
+                      builder: (context, snapshot) {
+                        final hasReviewed =
+                            snapshot.hasData && snapshot.data!.docs.isNotEmpty;
+
+                        if (hasReviewed) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.green[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.green[200]!),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green[700],
+                                ),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'Bạn đã đánh giá phòng này',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                              ],
                             ),
                           );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                        }
+
+                        return SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ReviewScreen(
+                                    booking: booking,
+                                    room: room,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text('Đánh giá phòng'),
                           ),
-                        ),
-                        child: const Text('Đánh giá'),
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ],

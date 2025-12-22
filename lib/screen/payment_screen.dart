@@ -52,7 +52,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
           .doc(widget.booking.id)
           .update({
             'status': BookingStatus.confirmed.name,
-            'paymentStatus': PaymentStatus.completed.name,
+            'paymentStatus':
+                'paid', // Sử dụng string 'paid' cho BookingModel PaymentStatus
             'updatedAt': Timestamp.now(),
           });
 
@@ -69,7 +70,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           recipientEmail: user.email,
           fullName: user.fullName,
           roomName: widget.room.name,
-          totalPrice: widget.booking.totalPrice.toStringAsFixed(0),
+          totalPrice: BookingModel.formatPrice(widget.booking.totalPrice),
           transactionId: payment.transactionId ?? 'N/A',
         ).catchError((e) {
           print('Lỗi gửi email: $e');
@@ -239,10 +240,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${widget.room.pricePerNight.toStringAsFixed(0)} VNĐ x ${widget.booking.numberOfNights} đêm',
+                        '${widget.room.formattedPrice} x ${widget.booking.nights} đêm',
                       ),
                       Text(
-                        '${widget.booking.totalPrice.toStringAsFixed(0)} VNĐ',
+                        widget.booking.formattedTotalPrice,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -259,7 +260,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                       ),
                       Text(
-                        '${widget.booking.totalPrice.toStringAsFixed(0)} VNĐ',
+                        widget.booking.formattedTotalPrice,
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,

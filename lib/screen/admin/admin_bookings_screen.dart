@@ -108,6 +108,12 @@ class _AdminBookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra xem đây có phải là hotel booking không
+    if (booking.roomId == null) {
+      // Đây là hotel booking, hiển thị card cho hotel
+      return _buildHotelBookingCard(context);
+    }
+
     return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance
           .collection('rooms')
@@ -119,6 +125,16 @@ class _AdminBookingCard extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(16),
               child: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+
+        // Kiểm tra xem document có tồn tại không
+        if (!roomSnapshot.data!.exists) {
+          return const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: Text('Phòng không tồn tại')),
             ),
           );
         }
@@ -186,7 +202,7 @@ class _AdminBookingCard extends StatelessWidget {
                       Text('${booking.numberOfGuests} khách'),
                       const Spacer(),
                       Text(
-                        '${booking.totalPrice.toStringAsFixed(0)} VNĐ',
+                        booking.formattedTotalPrice,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
@@ -261,6 +277,132 @@ class _AdminBookingCard extends StatelessWidget {
         ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
       }
     }
+  }
+
+  Widget _buildHotelBookingCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: () {
+          // Có thể thêm màn hình chi tiết hotel booking sau
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Chi tiết đặt khách sạn')),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          booking.hotelName ?? 'Khách sạn',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Booking #${booking.id.substring(0, 8)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _StatusChip(status: booking.status),
+                ],
+              ),
+              const Divider(height: 24),
+              if (booking.hotelLocation != null) ...[
+                Row(
+                  children: [
+                    const Icon(Icons.location_on, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        booking.hotelLocation!,
+                        style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+              Row(
+                children: [
+                  const Icon(Icons.calendar_today, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${booking.checkInDate.day}/${booking.checkInDate.month} - ${booking.checkOutDate.day}/${booking.checkOutDate.month}/${booking.checkOutDate.year}',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.people, size: 16),
+                  const SizedBox(width: 8),
+                  Text('${booking.numberOfGuests} khách'),
+                  const SizedBox(width: 16),
+                  const Icon(Icons.nightlight, size: 16),
+                  const SizedBox(width: 8),
+                  Text('${booking.nights} đêm'),
+                  const Spacer(),
+                  Text(
+                    booking.formattedTotalPrice,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+              if (booking.status == BookingStatus.pending) ...[
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => _updateBookingStatus(
+                          context,
+                          booking,
+                          BookingStatus.cancelled,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                        child: const Text('Từ chối'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => _updateBookingStatus(
+                          context,
+                          booking,
+                          BookingStatus.confirmed,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Xác nhận'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

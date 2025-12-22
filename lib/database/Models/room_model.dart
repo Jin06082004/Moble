@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; // Thêm import này
 
 class RoomModel {
   final String id;
@@ -115,6 +116,18 @@ class RoomModel {
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  // Thêm getter để format giá
+  String get formattedPrice {
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return '${formatter.format(pricePerNight)} VNĐ';
+  }
+
+  // Hoặc thêm method static để format bất kỳ số tiền nào
+  static String formatPrice(double price) {
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return '${formatter.format(price)} VNĐ';
   }
 }
 

@@ -132,6 +132,11 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra nếu là booking khách sạn (không có roomId)
+    if (booking.roomId == null || booking.roomId!.isEmpty) {
+      return _buildHotelBookingCard(context);
+    }
+
     return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance
           .collection('rooms')
@@ -240,7 +245,7 @@ class BookingCard extends StatelessWidget {
                         child: _InfoRow(
                           icon: Icons.nightlight,
                           label: 'Số đêm',
-                          value: '${booking.numberOfNights}',
+                          value: '${booking.nights}',
                         ),
                       ),
                     ],
@@ -254,7 +259,7 @@ class BookingCard extends StatelessWidget {
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       Text(
-                        '${booking.totalPrice.toStringAsFixed(0)} VNĐ',
+                        booking.formattedTotalPrice,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -269,6 +274,122 @@ class BookingCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildHotelBookingCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Chi tiết đặt khách sạn')),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.blue[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.hotel,
+                      size: 40,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          booking.hotelName ?? 'Khách sạn',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        _StatusChip(status: booking.status),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: _InfoRow(
+                      icon: Icons.login,
+                      label: 'Nhận phòng',
+                      value:
+                          '${booking.checkInDate.day}/${booking.checkInDate.month}/${booking.checkInDate.year}',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _InfoRow(
+                      icon: Icons.logout,
+                      label: 'Trả phòng',
+                      value:
+                          '${booking.checkOutDate.day}/${booking.checkOutDate.month}/${booking.checkOutDate.year}',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _InfoRow(
+                      icon: Icons.people,
+                      label: 'Số khách',
+                      value: '${booking.numberOfGuests}',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _InfoRow(
+                      icon: Icons.nightlight,
+                      label: 'Số đêm',
+                      value: '${booking.nights}',
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Tổng tiền',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  Text(
+                    booking.formattedTotalPrice,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

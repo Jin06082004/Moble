@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../database/Models/room_model.dart';
+import '../database/Models/review_model.dart';
 import 'room_detail_screen.dart';
 import 'my_bookings_screen.dart';
 import 'profie_screen.dart';
 import 'login_screen.dart';
+import 'hotel_search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,6 +60,16 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Đặt phòng'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const HotelSearchScreen()),
+          );
+        },
+        icon: const Icon(Icons.auto_awesome),
+        label: const Text('Tìm với AI'),
       ),
     );
   }
@@ -315,6 +327,52 @@ class RoomCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
+                  // Rating
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('reviews')
+                        .where('roomId', isEqualTo: room.id)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Text(
+                          'Chưa có đánh giá',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        );
+                      }
+
+                      final reviews = snapshot.data!.docs;
+                      final avgRating =
+                          reviews.fold<double>(0, (sum, doc) {
+                            final review = ReviewModel.fromFirestore(doc);
+                            return sum + review.rating;
+                          }) /
+                          reviews.length;
+
+                      return Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            avgRating.toStringAsFixed(1),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '(${reviews.length})',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
                   Text(
                     room.description,
                     maxLines: 2,
@@ -342,7 +400,7 @@ class RoomCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${room.pricePerNight.toStringAsFixed(0)} VNĐ/đêm',
+                        '${room.formattedPrice}/đêm',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

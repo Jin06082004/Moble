@@ -59,7 +59,16 @@ class AdminStatisticsScreen extends StatelessWidget {
                       if (bookingSnapshot.hasData) {
                         for (var doc in bookingSnapshot.data!.docs) {
                           final data = doc.data() as Map<String, dynamic>;
-                          if (data['paymentStatus'] == 'paid') {
+                          // Chỉ tính doanh thu từ các booking ở trạng thái Hoàn thành (checkedOut hoặc cancelled)
+                          // VÀ đã thanh toán (paid, partiallyPaid, hoặc completed)
+                          final status = data['status'];
+                          final paymentStatus = data['paymentStatus'];
+
+                          if ((status == 'checkedOut' ||
+                                  status == 'cancelled') &&
+                              (paymentStatus == 'paid' ||
+                                  paymentStatus == 'partiallyPaid' ||
+                                  paymentStatus == 'completed')) {
                             totalRevenue += (data['totalPrice'] ?? 0)
                                 .toDouble();
                           }
@@ -107,9 +116,8 @@ class AdminStatisticsScreen extends StatelessWidget {
                               Expanded(
                                 child: _StatCard(
                                   title: 'Doanh thu',
-                                  value:
-                                      '${(totalRevenue / 1000000).toStringAsFixed(1)}M',
-                                  subtitle: 'VNĐ',
+                                  value: BookingModel.formatPrice(totalRevenue),
+                                  subtitle: 'Tổng thu nhập',
                                   icon: Icons.attach_money,
                                   color: Colors.purple,
                                 ),
@@ -193,18 +201,23 @@ class _StatCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(icon, color: color, size: 32),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
+              // Không hiển thị value ở đây nếu là doanh thu (để hiển thị dưới)
             ],
           ),
           const SizedBox(height: 8),
           Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: title == 'Doanh thu' ? 18 : 28,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
           Text(
             subtitle,
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -234,8 +247,11 @@ class _RecentBookingCard extends StatelessWidget {
           '${booking.checkInDate.day}/${booking.checkInDate.month} - ${booking.checkOutDate.day}/${booking.checkOutDate.month}',
         ),
         trailing: Text(
-          '${booking.totalPrice.toStringAsFixed(0)} VNĐ',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          booking.formattedTotalPrice,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
         ),
       ),
     );

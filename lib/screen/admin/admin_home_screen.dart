@@ -1,3 +1,6 @@
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../login_screen.dart';
@@ -23,6 +26,29 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     AdminBookingsScreen(),
     AdminUsersScreen(),
   ];
+
+  Future<void> uploadHotelsToFirestore(BuildContext context) async {
+    try {
+      // Đọc file JSON từ assets
+      final contents = await rootBundle.loadString('data/hotels_vietnam.json');
+      final List<dynamic> hotels = json.decode(contents);
+
+      // Đẩy từng khách sạn lên Firestore
+      for (var hotel in hotels) {
+        await FirebaseFirestore.instance.collection('hotels').add(hotel);
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã đẩy dữ liệu lên Firestore thành công!'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi khi đẩy dữ liệu lên Firestore: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +103,18 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
         ],
       ),
-      body: _screens[_selectedIndex],
+      body: Column(
+        children: [
+          Expanded(child: _screens[_selectedIndex]),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () => uploadHotelsToFirestore(context),
+              child: const Text('Đẩy dữ liệu khách sạn lên Firestore'),
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
