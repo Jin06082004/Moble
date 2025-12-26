@@ -22,8 +22,17 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tài khoản'),
+        title: const Text(
+          'Tài khoản',
+          style: TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
         automaticallyImplyLeading: false,
+        iconTheme: const IconThemeData(color: Color(0xFF667eea)),
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
@@ -52,14 +61,11 @@ class ProfileScreen extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Theme.of(context).primaryColor.withOpacity(0.7),
-                      ],
+                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
                     ),
                   ),
                   child: Column(
@@ -75,9 +81,9 @@ class ProfileScreen extends StatelessWidget {
                                 user.fullName.isNotEmpty
                                     ? user.fullName[0].toUpperCase()
                                     : '?',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 40,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Color(0xFF667eea),
                                 ),
                               )
                             : null,
@@ -132,6 +138,7 @@ class ProfileScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF667eea),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -163,6 +170,7 @@ class ProfileScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF667eea),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -373,12 +381,19 @@ class _InfoTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF667eea).withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blue, size: 24),
+          Icon(icon, color: const Color(0xFF764ba2), size: 24),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -424,14 +439,28 @@ class _SettingsTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF667eea).withOpacity(0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ListTile(
-        leading: Icon(icon, color: textColor ?? Colors.blue),
-        title: Text(title, style: TextStyle(color: textColor)),
+        leading: Icon(icon, color: textColor ?? const Color(0xFF764ba2)),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: textColor ?? const Color(0xFF667eea),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

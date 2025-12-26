@@ -292,11 +292,16 @@ class _ReviewCard extends StatelessWidget {
           .doc(review.userId)
           .get(),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.all(8),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
         final userName = snapshot.hasData
             ? (snapshot.data!.data() as Map<String, dynamic>)['fullName'] ??
                   'Khách hàng'
             : 'Khách hàng';
-
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: Padding(

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1007787656296",
+    "firebase_url": "https://booking-app-6d26d-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "booking-app-6d26d",
     "storage_bucket": "booking-app-6d26d.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.damh"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1007787656296-0h9aks1jl6fm8bnnbq86fd05rptfjrkb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.damh",
+            "certificate_hash": "383ba5ef4f0012e1086fe0cbcc85692f2f4a1e4d"
+          }
+        },
+        {
+          "client_id": "1007787656296-2pv36mklid3kq4f0sdh0tl8jierer48a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCGnR0PntnF3WtXhvwtEuftB_p5r-67vKo"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1007787656296-2pv36mklid3kq4f0sdh0tl8jierer48a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

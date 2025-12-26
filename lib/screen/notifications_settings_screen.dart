@@ -86,48 +86,124 @@ class _NotificationsSettingsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cài đặt thông báo')),
+      appBar: AppBar(
+        title: const Text(
+          'Cài đặt thông báo',
+          style: TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF667eea)),
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         children: [
-          SwitchListTile(
-            title: const Text('Thông báo qua Email'),
-            subtitle: const Text('Nhận thông báo về đặt phòng qua email'),
-            value: _emailNotifications,
-            onChanged: (value) {
-              setState(() => _emailNotifications = value);
-            },
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
+            child: Column(
+              children: [
+                SwitchListTile(
+                  title: const Text(
+                    'Thông báo qua Email',
+                    style: TextStyle(
+                      color: Color(0xFF667eea),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: const Text('Nhận thông báo về đặt phòng qua email'),
+                  value: _emailNotifications,
+                  onChanged: (value) {
+                    setState(() => _emailNotifications = value);
+                  },
+                  activeColor: const Color(0xFF764ba2),
+                ),
+                const Divider(height: 0),
+                SwitchListTile(
+                  title: const Text(
+                    'Thông báo đặt phòng',
+                    style: TextStyle(
+                      color: Color(0xFF667eea),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: const Text(
+                    'Nhận thông báo khi có cập nhật đặt phòng',
+                  ),
+                  value: _bookingNotifications,
+                  onChanged: (value) {
+                    setState(() => _bookingNotifications = value);
+                  },
+                  activeColor: const Color(0xFF764ba2),
+                ),
+                const Divider(height: 0),
+                SwitchListTile(
+                  title: const Text(
+                    'Thông báo khuyến mãi',
+                    style: TextStyle(
+                      color: Color(0xFF667eea),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: const Text(
+                    'Nhận thông báo về các chương trình ưu đãi',
+                  ),
+                  value: _promotionNotifications,
+                  onChanged: (value) {
+                    setState(() => _promotionNotifications = value);
+                  },
+                  activeColor: const Color(0xFF764ba2),
+                ),
+              ],
+            ),
           ),
-          const Divider(),
-          SwitchListTile(
-            title: const Text('Thông báo đặt phòng'),
-            subtitle: const Text('Nhận thông báo khi có cập nhật đặt phòng'),
-            value: _bookingNotifications,
-            onChanged: (value) {
-              setState(() => _bookingNotifications = value);
-            },
-          ),
-          const Divider(),
-          SwitchListTile(
-            title: const Text('Thông báo khuyến mãi'),
-            subtitle: const Text('Nhận thông báo về các chương trình ưu đãi'),
-            value: _promotionNotifications,
-            onChanged: (value) {
-              setState(() => _promotionNotifications = value);
-            },
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
           SizedBox(
-            height: 50,
+            height: 52,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _saveSettings,
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Lưu cài đặt'),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: EdgeInsets.zero,
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+              ),
+              child: Ink(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          'Lưu cài đặt',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
             ),
           ),
         ],

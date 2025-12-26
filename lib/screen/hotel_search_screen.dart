@@ -105,7 +105,11 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
               const SizedBox(height: 20),
               const Text(
                 'Bộ lọc tìm kiếm',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF667eea),
+                ),
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -117,6 +121,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -125,6 +130,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                         title: Text(budget),
                         value: budget,
                         groupValue: _selectedBudget,
+                        activeColor: const Color(0xFF764ba2),
                         onChanged: (value) {
                           setState(() => _selectedBudget = value);
                           Navigator.pop(context);
@@ -137,6 +143,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -147,6 +154,13 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                             (type) => ChoiceChip(
                               label: Text(type),
                               selected: _selectedHotelType == type,
+                              selectedColor: const Color(0xFFe0e7ff),
+                              labelStyle: TextStyle(
+                                color: _selectedHotelType == type
+                                    ? const Color(0xFF667eea)
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                               onSelected: (selected) {
                                 setState(() {
                                   _selectedHotelType = selected ? type : null;
@@ -162,6 +176,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -172,6 +187,13 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                             (pref) => FilterChip(
                               label: Text(pref),
                               selected: _selectedPreferences.contains(pref),
+                              selectedColor: const Color(0xFFe0e7ff),
+                              labelStyle: TextStyle(
+                                color: _selectedPreferences.contains(pref)
+                                    ? const Color(0xFF667eea)
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                               onSelected: (selected) {
                                 setState(() {
                                   if (selected) {
@@ -191,6 +213,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
+                height: 48,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -198,8 +221,31 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
                   ),
-                  child: const Text('Áp dụng bộ lọc'),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Áp dụng bộ lọc',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -215,11 +261,16 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
       appBar: AppBar(
         title: const Text(
           'Tìm khách sạn',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF667eea),
+          ),
         ),
+        backgroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune),
+            icon: const Icon(Icons.tune, color: Color(0xFF764ba2)),
             onPressed: _showFilterBottomSheet,
           ),
         ],
@@ -245,7 +296,10 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                   controller: _destinationController,
                   decoration: InputDecoration(
                     hintText: 'Bạn muốn đi đâu?',
-                    prefixIcon: const Icon(Icons.search, color: Colors.blue),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Color(0xFF667eea),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -260,10 +314,23 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: _showFilterBottomSheet,
-                        icon: const Icon(Icons.filter_list, size: 18),
+                        icon: const Icon(
+                          Icons.filter_list,
+                          size: 18,
+                          color: Color(0xFF764ba2),
+                        ),
                         label: Text(
                           _selectedBudget?.split('(')[0].trim() ?? 'Ngân sách',
-                          style: const TextStyle(fontSize: 13),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF667eea),
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF667eea)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -280,10 +347,24 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Icon(Icons.search, size: 18),
+                            : const Icon(
+                                Icons.search,
+                                size: 18,
+                                color: Colors.white,
+                              ),
                         label: Text(
                           _isLoading ? 'Đang tìm...' : 'Tìm khách sạn',
-                          style: const TextStyle(fontSize: 13),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: const Color(0xFF667eea),
                         ),
                       ),
                     ),
@@ -338,14 +419,14 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 6,
+      shadowColor: const Color(0xFF667eea).withOpacity(0.08),
       child: InkWell(
         onTap: () => _showHotelDetails(hotel),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Thêm hình ảnh thực tế từ URL mẫu
             Image.network(
               hotel.imageUrl.isNotEmpty
                   ? hotel.imageUrl
@@ -372,6 +453,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF667eea),
                           ),
                         ),
                       ),
@@ -407,10 +489,10 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.location_on,
                         size: 16,
-                        color: Colors.grey[600],
+                        color: Color(0xFF764ba2),
                       ),
                       const SizedBox(width: 4),
                       Expanded(
@@ -500,6 +582,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xFF667eea),
                             ),
                           ),
                         ),
@@ -521,7 +604,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        const Icon(Icons.location_on, color: Colors.red),
+                        const Icon(Icons.location_on, color: Color(0xFF764ba2)),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -539,6 +622,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -552,6 +636,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -637,16 +722,37 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                 horizontal: 24,
                                 vertical: 12,
                               ),
+                              backgroundColor: const Color(0xFF667eea),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                            child: const Text('Đặt ngay'),
+                            child: const Text(
+                              'Đặt ngay',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
-                      icon: const Icon(Icons.map),
-                      label: const Text('Xem bản đồ'),
+                      icon: const Icon(Icons.map, color: Color(0xFF764ba2)),
+                      label: const Text(
+                        'Xem bản đồ',
+                        style: TextStyle(color: Color(0xFF667eea)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF667eea)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
                       onPressed: () async {
                         final availableMaps = await MapLauncher.installedMaps;
                         if (availableMaps.isNotEmpty) {

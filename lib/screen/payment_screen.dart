@@ -52,8 +52,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           .doc(widget.booking.id)
           .update({
             'status': BookingStatus.confirmed.name,
-            'paymentStatus':
-                'paid', // Sử dụng string 'paid' cho BookingModel PaymentStatus
+            'paymentStatus': 'paid',
             'updatedAt': Timestamp.now(),
           });
 
@@ -65,7 +64,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       if (userDoc.exists) {
         final user = UserModel.fromFirestore(userDoc);
-        // Gửi email xác nhận thanh toán (không chờ để không làm chậm UI)
         EmailService.sendPaymentConfirmationEmail(
           recipientEmail: user.email,
           fullName: user.fullName,
@@ -78,7 +76,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
 
       if (mounted) {
-        // Show success dialog
         await showDialog(
           context: context,
           barrierDismissible: false,
@@ -106,7 +103,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // Navigate to home and clear stack
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const HomeScreen()),
                     (route) => false,
@@ -132,16 +128,32 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Thanh toán')),
+      appBar: AppBar(
+        title: const Text(
+          'Thanh toán',
+          style: TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF667eea)),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Booking Summary
             Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 6,
+              shadowColor: const Color(0xFF667eea).withOpacity(0.08),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -150,6 +162,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const Divider(height: 24),
@@ -157,7 +170,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       children: [
                         if (widget.room.images.isNotEmpty)
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(12),
                             child: Image.network(
                               widget.room.images.first,
                               width: 80,
@@ -171,7 +184,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               ),
                             ),
                           ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 18),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,6 +194,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  color: Color(0xFF667eea),
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -209,13 +223,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Payment Method Selection
             const Text(
               'Phương thức thanh toán',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF667eea),
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             ...PaymentMethod.values.map((method) {
               return _PaymentMethodTile(
                 method: method,
@@ -225,14 +243,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 },
               );
             }),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Price Summary
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue[200]!),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFe0e7ff), Color(0xFFf3e8ff)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Color(0xFF667eea).withOpacity(0.15)),
               ),
               child: Column(
                 children: [
@@ -241,10 +261,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     children: [
                       Text(
                         '${widget.room.formattedPrice} x ${widget.booking.nights} đêm',
+                        style: const TextStyle(
+                          color: Color(0xFF667eea),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       Text(
                         widget.booking.formattedTotalPrice,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF764ba2),
+                        ),
                       ),
                     ],
                   ),
@@ -257,6 +284,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF667eea),
                         ),
                       ),
                       Text(
@@ -264,7 +292,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                          color: Color(0xFF764ba2),
                         ),
                       ),
                     ],
@@ -272,33 +300,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Payment Button
             SizedBox(
-              height: 50,
+              height: 54,
               child: ElevatedButton(
                 onPressed: _isProcessing ? null : _processPayment,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: EdgeInsets.zero,
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                ),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: _isProcessing
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Xác nhận thanh toán',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
-                child: _isProcessing
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Text(
-                        'Xác nhận thanh toán',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
               ),
             ),
             const SizedBox(height: 16),
@@ -369,28 +413,29 @@ class _PaymentMethodTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         border: Border.all(
-          color: isSelected ? Colors.blue : Colors.grey[300]!,
+          color: isSelected ? const Color(0xFF667eea) : Colors.grey[300]!,
           width: isSelected ? 2 : 1,
         ),
-        borderRadius: BorderRadius.circular(12),
-        color: isSelected ? Colors.blue[50] : null,
+        borderRadius: BorderRadius.circular(14),
+        color: isSelected ? const Color(0xFFe0e7ff) : null,
       ),
       child: ListTile(
         leading: Icon(
           _getMethodIcon(method),
-          color: isSelected ? Colors.blue : Colors.grey[600],
+          color: isSelected ? const Color(0xFF764ba2) : Colors.grey[600],
         ),
         title: Text(
           _getMethodLabel(method),
           style: TextStyle(
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? const Color(0xFF667eea) : null,
           ),
         ),
         trailing: isSelected
-            ? const Icon(Icons.check_circle, color: Colors.blue)
+            ? const Icon(Icons.check_circle, color: Color(0xFF667eea))
             : null,
         onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }

@@ -164,73 +164,90 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Đặt phòng')),
+      appBar: AppBar(
+        title: const Text(
+          'Đặt phòng',
+          style: TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF667eea)),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Room Info Card
             Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 6,
+              shadowColor: const Color(0xFF667eea).withOpacity(0.08),
               child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.all(18),
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        if (widget.room.images.isNotEmpty)
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              widget.room.images.first,
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                width: 80,
-                                height: 80,
-                                color: Colors.grey[300],
-                                child: const Icon(Icons.hotel),
-                              ),
-                            ),
-                          ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.room.name,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${widget.room.formattedPrice}/đêm',
-                                style: const TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                    if (widget.room.images.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          widget.room.images.first,
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 90,
+                            height: 90,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.hotel),
                           ),
                         ),
-                      ],
+                      ),
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.room.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF667eea),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${widget.room.formattedPrice}/đêm',
+                            style: const TextStyle(
+                              color: Color(0xFF764ba2),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Date Selection
             const Text(
               'Chọn ngày',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF667eea),
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
@@ -240,7 +257,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     onTap: _selectCheckInDate,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: _DateSelector(
                     label: 'Trả phòng',
@@ -251,7 +268,7 @@ class _BookingScreenState extends State<BookingScreen> {
               ],
             ),
             if (_numberOfNights > 0) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
                 '$_numberOfNights đêm',
                 style: TextStyle(
@@ -260,18 +277,23 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ),
             ],
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Number of Guests
             const Text(
               'Số lượng khách',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF667eea),
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Color(0xFF667eea).withOpacity(0.15)),
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -283,7 +305,10 @@ class _BookingScreenState extends State<BookingScreen> {
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.remove_circle_outline),
+                        icon: const Icon(
+                          Icons.remove_circle_outline,
+                          color: Color(0xFF764ba2),
+                        ),
                         onPressed: _numberOfGuests > 1
                             ? () {
                                 setState(() => _numberOfGuests--);
@@ -295,10 +320,14 @@ class _BookingScreenState extends State<BookingScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF667eea),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.add_circle_outline),
+                        icon: const Icon(
+                          Icons.add_circle_outline,
+                          color: Color(0xFF764ba2),
+                        ),
                         onPressed: _numberOfGuests < widget.room.maxGuests
                             ? () {
                                 setState(() => _numberOfGuests++);
@@ -310,32 +339,48 @@ class _BookingScreenState extends State<BookingScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Special Requests
             const Text(
               'Yêu cầu đặc biệt (Tùy chọn)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF667eea),
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             TextField(
               controller: _specialRequestsController,
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Nhập yêu cầu đặc biệt của bạn...',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFF667eea)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF764ba2),
+                    width: 2,
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Price Summary
             if (_numberOfNights > 0) ...[
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue[200]!),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFe0e7ff), Color(0xFFf3e8ff)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Color(0xFF667eea).withOpacity(0.15),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -344,10 +389,17 @@ class _BookingScreenState extends State<BookingScreen> {
                       children: [
                         Text(
                           '${widget.room.formattedPrice} x $_numberOfNights đêm',
+                          style: const TextStyle(
+                            color: Color(0xFF667eea),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         Text(
                           RoomModel.formatPrice(_totalPrice),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF764ba2),
+                          ),
                         ),
                       ],
                     ),
@@ -360,6 +412,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF667eea),
                           ),
                         ),
                         Text(
@@ -367,7 +420,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                            color: Color(0xFF764ba2),
                           ),
                         ),
                       ],
@@ -375,31 +428,50 @@ class _BookingScreenState extends State<BookingScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
             ],
             // Book Button
             SizedBox(
-              height: 50,
+              height: 54,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _createBooking,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: EdgeInsets.zero,
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                ),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Tiếp tục thanh toán',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text(
-                        'Tiếp tục thanh toán',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
               ),
             ),
           ],
@@ -424,12 +496,13 @@ class _DateSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[300]!),
-          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF667eea).withOpacity(0.15)),
+          borderRadius: BorderRadius.circular(14),
+          color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,7 +519,7 @@ class _DateSelector extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: date != null ? Colors.black : Colors.grey,
+                color: date != null ? const Color(0xFF667eea) : Colors.grey,
               ),
             ),
           ],

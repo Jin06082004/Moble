@@ -33,13 +33,21 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        surfaceTintColor: Colors.white,
+        foregroundColor: const Color(0xFF667eea),
         elevation: 0,
-        scrolledUnderElevation: 0,
-        title: const Text('Đặt phòng của tôi'),
+        title: const Text(
+          'Đặt phòng của tôi',
+          style: TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: const Color(0xFF667eea),
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: const Color(0xFF764ba2),
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
             Tab(text: 'Đang chờ'),
             Tab(text: 'Đã xác nhận'),
@@ -156,6 +164,11 @@ class BookingCard extends StatelessWidget {
 
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 6,
+          shadowColor: const Color(0xFF667eea).withOpacity(0.08),
           child: InkWell(
             onTap: () {
               Navigator.of(context).push(
@@ -165,9 +178,9 @@ class BookingCard extends StatelessWidget {
                 ),
               );
             },
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -175,7 +188,7 @@ class BookingCard extends StatelessWidget {
                     children: [
                       if (room.images.isNotEmpty)
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           child: Image.network(
                             room.images.first,
                             width: 80,
@@ -199,6 +212,7 @@ class BookingCard extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
+                                color: Color(0xFF667eea),
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -263,7 +277,7 @@ class BookingCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                          color: Color(0xFF764ba2),
                         ),
                       ),
                     ],
@@ -280,15 +294,18 @@ class BookingCard extends StatelessWidget {
   Widget _buildHotelBookingCard(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 6,
+      shadowColor: const Color(0xFF667eea).withOpacity(0.08),
       child: InkWell(
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Chi tiết đặt khách sạn')),
           );
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -299,7 +316,7 @@ class BookingCard extends StatelessWidget {
                     height: 80,
                     decoration: BoxDecoration(
                       color: Colors.blue[100],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
                       Icons.hotel,
@@ -317,6 +334,7 @@ class BookingCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF667eea),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -381,7 +399,7 @@ class BookingCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green,
+                      color: Color(0xFF764ba2),
                     ),
                   ),
                 ],
@@ -409,7 +427,7 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.grey[600]),
+        Icon(icon, size: 16, color: const Color(0xFF764ba2)),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -471,7 +489,7 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,

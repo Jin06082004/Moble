@@ -7,13 +7,28 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trợ giúp')),
+      appBar: AppBar(
+        title: const Text(
+          'Trợ giúp',
+          style: TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF667eea)),
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         children: [
           const Text(
             'Câu hỏi thường gặp',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF667eea),
+            ),
           ),
           const SizedBox(height: 16),
           _FAQTile(
@@ -44,15 +59,23 @@ class HelpScreen extends StatelessWidget {
           const SizedBox(height: 24),
           const Text(
             'Liên hệ hỗ trợ',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF667eea),
+            ),
           ),
           const SizedBox(height: 16),
           Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
             child: ListTile(
-              leading: const Icon(Icons.phone),
+              leading: const Icon(Icons.phone, color: Color(0xFF764ba2)),
               title: const Text('Hotline'),
               subtitle: const Text('1900-xxxx'),
-              trailing: const Icon(Icons.call),
+              trailing: const Icon(Icons.call, color: Color(0xFF667eea)),
               onTap: () async {
                 final Uri uri = Uri(scheme: 'tel', path: '1900xxxx');
                 if (await canLaunchUrl(uri)) {
@@ -62,11 +85,15 @@ class HelpScreen extends StatelessWidget {
             ),
           ),
           Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
             child: ListTile(
-              leading: const Icon(Icons.email),
+              leading: const Icon(Icons.email, color: Color(0xFF764ba2)),
               title: const Text('Email'),
               subtitle: const Text('support@bookingapp.com'),
-              trailing: const Icon(Icons.mail),
+              trailing: const Icon(Icons.mail, color: Color(0xFF667eea)),
               onTap: () async {
                 final Uri uri = Uri(
                   scheme: 'mailto',
@@ -80,11 +107,18 @@ class HelpScreen extends StatelessWidget {
             ),
           ),
           Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
             child: ListTile(
-              leading: const Icon(Icons.chat),
+              leading: const Icon(Icons.chat, color: Color(0xFF764ba2)),
               title: const Text('Chat trực tuyến'),
               subtitle: const Text('8:00 - 22:00 hàng ngày'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: Color(0xFF667eea),
+              ),
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -114,8 +148,16 @@ class _FAQTileState extends State<_FAQTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 3,
       child: ExpansionTile(
-        title: Text(widget.question),
+        title: Text(
+          widget.question,
+          style: const TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(16),

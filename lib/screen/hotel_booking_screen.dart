@@ -152,36 +152,53 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Đặt phòng')),
+      appBar: AppBar(
+        title: const Text(
+          'Đặt phòng khách sạn',
+          style: TextStyle(
+            color: Color(0xFF667eea),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF667eea)),
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Hotel Info Summary
             Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFe0e7ff), Color(0xFFf3e8ff)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(24),
+                ),
               ),
               child: Row(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     child: Image.network(
                       widget.hotel.imageUrl,
-                      width: 80,
-                      height: 80,
+                      width: 90,
+                      height: 90,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        width: 80,
-                        height: 80,
+                        width: 90,
+                        height: 90,
                         color: Colors.grey[300],
                         child: const Icon(Icons.hotel),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 18),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,8 +206,9 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                         Text(
                           widget.hotel.name,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF667eea),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -198,13 +216,13 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                           children: [
                             const Icon(
                               Icons.star,
-                              size: 14,
+                              size: 16,
                               color: Colors.amber,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               '${widget.hotel.rating}',
-                              style: const TextStyle(fontSize: 13),
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ],
                         ),
@@ -212,7 +230,7 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                         Text(
                           widget.hotel.location,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 13,
                             color: Colors.grey[600],
                           ),
                           maxLines: 1,
@@ -229,7 +247,7 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
             Form(
               key: _formKey,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -238,6 +256,7 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -248,14 +267,37 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                         Expanded(
                           child: InkWell(
                             onTap: () => _selectDate(context, true),
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: 'Ngày nhận phòng',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.calendar_today),
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFF667eea,
+                                  ).withOpacity(0.15),
+                                ),
                               ),
-                              child: Text(
-                                '${_checkInDate.day}/${_checkInDate.month}/${_checkInDate.year}',
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Ngày nhận phòng',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF667eea),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_checkInDate.day}/${_checkInDate.month}/${_checkInDate.year}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -264,14 +306,37 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                         Expanded(
                           child: InkWell(
                             onTap: () => _selectDate(context, false),
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: 'Ngày trả phòng',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.calendar_today),
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFF667eea,
+                                  ).withOpacity(0.15),
+                                ),
                               ),
-                              child: Text(
-                                '${_checkOutDate.day}/${_checkOutDate.month}/${_checkOutDate.year}',
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Ngày trả phòng',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF667eea),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_checkOutDate.day}/${_checkOutDate.month}/${_checkOutDate.year}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -307,6 +372,7 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -367,24 +433,31 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Payment Method
                     const Text(
                       'Phương thức thanh toán',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
                       ),
                     ),
                     const SizedBox(height: 16),
 
                     ..._paymentMethods.map(
                       (method) => RadioListTile<String>(
-                        title: Text(method),
+                        title: Text(
+                          method,
+                          style: const TextStyle(
+                            color: Color(0xFF764ba2),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         value: method,
                         groupValue: _paymentMethod,
                         onChanged: (value) {
                           setState(() => _paymentMethod = value!);
                         },
+                        activeColor: const Color(0xFF667eea),
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
@@ -404,11 +477,15 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
 
                     // Price Summary
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.green[200]!),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFe0e7ff), Color(0xFFf3e8ff)],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFF667eea).withOpacity(0.12),
+                        ),
                       ),
                       child: Column(
                         children: [
@@ -446,14 +523,15 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  color: Color(0xFF667eea),
                                 ),
                               ),
                               Text(
                                 '${_estimatedPrice.toStringAsFixed(1)} triệu',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
+                                  color: Color(0xFF764ba2),
                                 ),
                               ),
                             ],
@@ -466,17 +544,46 @@ class _HotelBookingScreenState extends State<HotelBookingScreen> {
                     // Submit Button
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 54,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _submitBooking,
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : const Text(
-                                'Xác nhận đặt phòng',
-                                style: TextStyle(fontSize: 16),
-                              ),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: EdgeInsets.zero,
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 22,
+                                    width: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Xác nhận đặt phòng',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
