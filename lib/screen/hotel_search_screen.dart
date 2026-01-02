@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../database/Models/hotel_model.dart';
 import 'hotel_booking_screen.dart';
 
-class HotelSearchScreen extends StatefulWidget {
-  const HotelSearchScreen({super.key});
+class HotelAISearchScreen extends StatefulWidget {
+  const HotelAISearchScreen({super.key});
 
   @override
-  State<HotelSearchScreen> createState() => _HotelSearchScreenState();
+  State<HotelAISearchScreen> createState() => _HotelAISearchScreenState();
 }
 
-class _HotelSearchScreenState extends State<HotelSearchScreen> {
+class _HotelAISearchScreenState extends State<HotelAISearchScreen> {
+  // Hotel search state
   final _destinationController = TextEditingController();
-
   List<Hotel> _hotels = [];
   bool _isLoading = false;
   String? _selectedBudget;
@@ -45,6 +49,13 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     'Phù hợp công tác',
   ];
 
+  // AI chat state
+  final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final List<_ChatMessage> _history = [];
+  bool _isAILoading = false;
+  String _errorMessage = '';
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +63,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     _selectedHotelType = _hotelTypes[0];
   }
 
+  // Hotel search logic
   Future<void> _searchHotels() async {
     setState(() => _isLoading = true);
     try {
@@ -255,166 +267,329 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     );
   }
 
+  // AI chat logic
+  Future<void> _sendMessage() async {
+    final message = _textController.text.trim();
+    if (message.isEmpty) return;
+
+    setState(() {
+      _history.add(_ChatMessage(message: message, isUser: true));
+      _textController.clear();
+      _isAILoading = true;
+    });
+    _scrollToBottom();
+
+    try {
+      final responseText = await _callOpenAIGPT(message);
+      setState(() {
+        _history.add(_ChatMessage(message: responseText, isUser: false));
+        _isAILoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _history.add(
+          _ChatMessage(message: 'Đã có lỗi xảy ra: $e', isUser: false),
+        );
+        _isAILoading = false;
+      });
+    }
+    _scrollToBottom();
+  }
+
+  Future<String> _callOpenAIGPT(String userMessage) async {
+    final prompt =
+        '''
+Bạn là trợ lý AI chuyên hỗ trợ đặt khách sạn trong ứng dụng mobile.
+
+Nhiệm vụ của bạn:
+- Khi người dùng yêu cầu tìm khách sạn, hãy đề xuất các khách sạn CỤ THỂ
+- Trả lời bằng tiếng Việt, giọng thân thiện, dễ hiểu
+- Không trả lời chung chung hay chỉ gợi ý website
+
+Với mỗi khách sạn, hãy cung cấp đầy đủ:
+- Tên khách sạn
+- Khu vực / địa chỉ
+- Hạng sao
+- Giá tham khảo mỗi đêm
+- Tiện ích nổi bật
+- Đánh giá trung bình (nếu có)
+
+Nếu người dùng không nói rõ ngân sách hay khu vực, hãy tự đề xuất 3–5 khách sạn phổ biến, phù hợp với đa số du khách.
+
+Câu hỏi của người dùng:
+"$userMessage"
+''';
+
+    final apiKey = dotenv.env['OPENAI_API_KEY'] ?? '';
+    if (apiKey.isEmpty) {
+      throw 'Lỗi: Không tìm thấy OPENAI_API_KEY trong file .env';
+    }
+
+    final url = Uri.parse('https://api.openai.com/v1/chat/completions');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $apiKey',
+    };
+    final body = jsonEncode({
+      'model': 'gpt-3.5-turbo',
+      'messages': [
+        {'role': 'user', 'content': prompt},
+      ],
+      'max_tokens': 512,
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['choices'][0]['message']['content']?.trim() ??
+          'Không có phản hồi từ AI.';
+    } else {
+      throw 'Lỗi API: ${response.statusCode} - ${response.body}';
+    }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Tìm khách sạn',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF667eea),
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.tune, color: Color(0xFF764ba2)),
-            onPressed: _showFilterBottomSheet,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Search Bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Tìm khách sạn & Trợ lý AI',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF667eea),
             ),
-            child: Column(
+          ),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          bottom: const TabBar(
+            labelColor: Color(0xFF667eea),
+            unselectedLabelColor: Color(0xFF764ba2),
+            indicatorColor: Color(0xFF667eea),
+            tabs: [
+              Tab(icon: Icon(Icons.hotel), text: 'Tìm khách sạn'),
+              Tab(icon: Icon(Icons.smart_toy), text: 'Trợ lý AI'),
+            ],
+          ),
+          actions: [
+            Builder(
+              builder: (context) {
+                final tabIndex = DefaultTabController.of(context)?.index ?? 0;
+                if (tabIndex == 0) {
+                  return IconButton(
+                    icon: const Icon(Icons.tune, color: Color(0xFF764ba2)),
+                    onPressed: _showFilterBottomSheet,
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
+        ),
+        body: TabBarView(
+          children: [
+            // Hotel Search Tab
+            Column(
               children: [
-                TextField(
-                  controller: _destinationController,
-                  decoration: InputDecoration(
-                    hintText: 'Bạn muốn đi đâu?',
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Color(0xFF667eea),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
+                // Search Bar
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  onSubmitted: (_) => _searchHotels(),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _showFilterBottomSheet,
-                        icon: const Icon(
-                          Icons.filter_list,
-                          size: 18,
-                          color: Color(0xFF764ba2),
-                        ),
-                        label: Text(
-                          _selectedBudget?.split('(')[0].trim() ?? 'Ngân sách',
-                          style: const TextStyle(
-                            fontSize: 13,
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _destinationController,
+                        decoration: InputDecoration(
+                          hintText: 'Bạn muốn đi đâu?',
+                          prefixIcon: const Icon(
+                            Icons.search,
                             color: Color(0xFF667eea),
                           ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF667eea)),
-                          shape: RoundedRectangleBorder(
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          filled: true,
+                          fillColor: Colors.grey[50],
                         ),
+                        onSubmitted: (_) => _searchHotels(),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _isLoading ? null : _searchHotels,
-                        icon: _isLoading
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _showFilterBottomSheet,
+                              icon: const Icon(
+                                Icons.filter_list,
+                                size: 18,
+                                color: Color(0xFF764ba2),
+                              ),
+                              label: Text(
+                                _selectedBudget?.split('(')[0].trim() ??
+                                    'Ngân sách',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Color(0xFF667eea),
+                                ),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(
+                                  color: Color(0xFF667eea),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _isLoading ? null : _searchHotels,
+                              icon: _isLoading
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.search,
+                                      size: 18,
+                                      color: Colors.white,
+                                    ),
+                              label: Text(
+                                _isLoading ? 'Đang tìm...' : 'Tìm khách sạn',
+                                style: const TextStyle(
+                                  fontSize: 13,
                                   color: Colors.white,
                                 ),
-                              )
-                            : const Icon(
-                                Icons.search,
-                                size: 18,
-                                color: Colors.white,
                               ),
-                        label: Text(
-                          _isLoading ? 'Đang tìm...' : 'Tìm khách sạn',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.white,
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                backgroundColor: const Color(0xFF667eea),
+                              ),
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          backgroundColor: const Color(0xFF667eea),
-                        ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+                // Hotel List
+                Expanded(
+                  child: _hotels.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.hotel,
+                                size: 80,
+                                color: Colors.grey[300],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Nhập điểm đến để tìm khách sạn',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Hệ thống sẽ gợi ý những lựa chọn tốt nhất cho bạn',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: _hotels.length,
+                          itemBuilder: (context, index) {
+                            final hotel = _hotels[index];
+                            return _buildHotelCard(hotel);
+                          },
+                        ),
                 ),
               ],
             ),
-          ),
-          // Hotel List
-          Expanded(
-            child: _hotels.isEmpty
+            // AI Chat Tab
+            _errorMessage.isNotEmpty
                 ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.hotel, size: 80, color: Colors.grey[300]),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Nhập điểm đến để tìm khách sạn',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Hệ thống sẽ gợi ý những lựa chọn tốt nhất cho bạn',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        _errorMessage,
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _hotels.length,
-                    itemBuilder: (context, index) {
-                      final hotel = _hotels[index];
-                      return _buildHotelCard(hotel);
-                    },
+                : Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.all(8.0),
+                          itemCount: _history.length,
+                          itemBuilder: (context, index) {
+                            final chat = _history[index];
+                            return _ChatBubble(
+                              message: chat.message,
+                              isUser: chat.isUser,
+                            );
+                          },
+                        ),
+                      ),
+                      if (_isAILoading)
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      _buildInputArea(),
+                    ],
                   ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  // Adjusted Hotel Card
+  // Hotel Card
   Widget _buildHotelCard(Hotel hotel) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -773,9 +948,96 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     );
   }
 
+  // AI chat input area
+  Widget _buildInputArea() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, -2),
+            blurRadius: 4,
+            color: Colors.black.withOpacity(0.1),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _textController,
+                decoration: const InputDecoration(
+                  hintText: 'Nhập tin nhắn...',
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                ),
+                onSubmitted: (_) => _sendMessage(),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: (_isAILoading) ? null : _sendMessage,
+              color: Theme.of(context).primaryColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _destinationController.dispose();
+    _textController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+}
+
+class _ChatMessage {
+  final String message;
+  final bool isUser;
+  _ChatMessage({required this.message, required this.isUser});
+}
+
+class _ChatBubble extends StatelessWidget {
+  final String message;
+  final bool isUser;
+
+  const _ChatBubble({required this.message, required this.isUser});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
+        decoration: BoxDecoration(
+          color: isUser
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Theme.of(context).colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(12),
+            topRight: const Radius.circular(12),
+            bottomLeft: Radius.circular(isUser ? 12 : 0),
+            bottomRight: Radius.circular(isUser ? 0 : 12),
+          ),
+        ),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
+        child: Text(
+          message,
+          style: TextStyle(
+            color: isUser
+                ? Theme.of(context).colorScheme.onPrimaryContainer
+                : Theme.of(context).colorScheme.onSecondaryContainer,
+          ),
+        ),
+      ),
+    );
   }
 }

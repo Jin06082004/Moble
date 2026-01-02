@@ -8,7 +8,6 @@ import 'my_bookings_screen.dart';
 import 'profie_screen.dart';
 // import 'login_screen.dart';
 import 'hotel_search_screen.dart';
-import 'ai_chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -94,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const HotelSearchScreen()),
+              MaterialPageRoute(builder: (_) => const HotelAISearchScreen()),
             );
           },
           backgroundColor: Colors.transparent,
@@ -179,26 +178,6 @@ class _RoomListViewState extends State<RoomListView> {
                           ),
                           Row(
                             children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.chat_bubble_outline_rounded,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const AIChatScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
                               const SizedBox(width: 8),
                               // Container(
                               //   decoration: BoxDecoration(
